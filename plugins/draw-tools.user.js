@@ -138,6 +138,28 @@ window.plugin.drawTools.enhanceCircle = function() {
   }
 }
 
+window.intersects = function(x1, y1, x2, y2, x3, y3, x4, y4) {
+  var bx = x2 - x1; 
+  var by = y2 - y1; 
+  var dx = x4 - x3; 
+  var dy = y4 - y3;
+  var b_dot_d_perp = bx * dy - by * dx;
+  if(b_dot_d_perp == 0) {
+    return null;
+  }
+  var cx = x3 - x1;
+  var cy = y3 - y1;
+  var t = (cx * dy - cy * dx) / b_dot_d_perp;
+  if(t <= 0 || t >= 1) {
+    return false;
+  }
+  var u = (cx * by - cy * bx) / b_dot_d_perp;
+  if(u <= 0 || u >= 1) { 
+    return false;
+  }
+  return true;
+}
+
 // hacks into PolyLine to implement snapping and to remove the polyline
 // markers when they are not required anymore for finishing the line.
 // Otherwise they get in the way and make it harder to create a closed
@@ -149,9 +171,44 @@ window.plugin.drawTools.enhancePolyLine = function() {
     var cp = map.latLngToContainerPoint(e.target.getLatLng());
     var snapTo = window.plugin.drawTools.getSnapLatLng(cp);
     if(snapTo) e.target._latlng = snapTo;
+    if(this._markers.length>0) {
+      console.log('start:'+this._markers[0].getLatLng()+'end:'+e.target._latlng);
+    	console.log('links length '+window.links.length);
+    	var ll1 = this._markers[0].getLatLng();
+    	var ll2 = e.target._latlng;
+    	$.each(window.links, function(i, link) {
+    		console.log(link);
+    		console.log(window.intersects(ll1.lat, ll1.lng, ll2.lat, ll2.lng, link._latlngs[0].lat, link._latlngs[0].lng, link._latlngs[1].lat, link._latlngs[1].lng));
+  		});
+  	}
     return this._onClickOld(e);
   }
+/*
+	L.Polyline.Draw.prototype._onClick = function (e) {
+		var latlng = e.target.getLatLng(),
+			markerCount = this._markers.length;
 
+		if (markerCount > 0 && !this.options.allowIntersection && this._poly.newLatLngIntersects(latlng)) {
+			this._showErrorLabel();
+			return;
+		}
+		else if (this._errorShown) {
+			this._hideErrorLabel();
+		}
+
+		this._markers.push(this._createMarker(latlng));
+
+		this._poly.addLatLng(latlng);
+
+		if (this._poly.getLatLngs().length === 2) {
+			this._map.addLayer(this._poly);
+		}
+
+		this._updateMarkerHandler();
+
+		this._vertexAdded(latlng);
+	}
+*/
   // remove polyline markers because they get in the way
   L.Polyline.Draw.prototype._updateMarkerHandlerOld = L.Polyline.Draw.prototype._updateMarkerHandler;
   L.Polyline.Draw.prototype._updateMarkerHandler = function() {
