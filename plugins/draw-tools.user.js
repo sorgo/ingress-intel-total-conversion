@@ -183,32 +183,6 @@ window.plugin.drawTools.enhancePolyLine = function() {
   	}
     return this._onClickOld(e);
   }
-/*
-	L.Polyline.Draw.prototype._onClick = function (e) {
-		var latlng = e.target.getLatLng(),
-			markerCount = this._markers.length;
-
-		if (markerCount > 0 && !this.options.allowIntersection && this._poly.newLatLngIntersects(latlng)) {
-			this._showErrorLabel();
-			return;
-		}
-		else if (this._errorShown) {
-			this._hideErrorLabel();
-		}
-
-		this._markers.push(this._createMarker(latlng));
-
-		this._poly.addLatLng(latlng);
-
-		if (this._poly.getLatLngs().length === 2) {
-			this._map.addLayer(this._poly);
-		}
-
-		this._updateMarkerHandler();
-
-		this._vertexAdded(latlng);
-	}
-*/
   // remove polyline markers because they get in the way
   L.Polyline.Draw.prototype._updateMarkerHandlerOld = L.Polyline.Draw.prototype._updateMarkerHandler;
   L.Polyline.Draw.prototype._updateMarkerHandler = function() {
