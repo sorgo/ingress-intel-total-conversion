@@ -573,17 +573,20 @@ window.chat.postMsg = function() {
               lngE6: Math.round(latlng.lng*1E6),
               factionOnly: !public};
 
-  var errMsg = 'Your message could not be delivered. You can copy&' +
-               'paste it here and try again if you want:\n\n' + msg;
+  var errMsg = 'Your message could not be delivered. You can try to post it again.';
+  $('#chatinput input').disabled=true;
 
   window.postAjax('sendPlext', data,
     function(response) {
-      if(response.error) alert(errMsg);
+      if(response.error) {
+        alert(errMsg); 
+      } else {
+        $('#chatinput input').disabled=false;
+        $('#chatinput input').val('');
+      }
       if(public) chat.requestPublic(false); else chat.requestFaction(false); },
     function() {
       alert(errMsg);
     }
   );
-
-  $('#chatinput input').val('');
 }
